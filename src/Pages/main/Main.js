@@ -6,26 +6,46 @@ import {
   Text,
   ScrollView,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import * as MediaLibrary from "expo-media-library";
 import { useSelector } from "react-redux";
+import ImageViewer from "../../Components/ImageViewer/ImageViewer";
 
 const Main = () => {
-  const [image, setImage] = useState(null);
+  const [imageList, setImageList] = useState([]);
 
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    console.log("recover image");
+    const imagenes = await MediaLibrary.getAssetsAsync({ mediaType: "photo" });
+    console.log("Imagenes: ",imagenes.assets );
+    setImageList(imagenes.assets)
+  };
+
+  useEffect(() => {
+    pickImage();
+  }, []);
  
-  const images = useSelector((state) => {
-    return state.images.image_list;
-  });
+  // const images = useSelector((state) => {
+  //   return state.images.image_list;
+  // });
+  console.log("******************************+")
+  console.log("imageList: ",imageList)
+  console.log("******************************+")
+  const onPressImage = ()=>{
+    setIsVisible(true)
+  }
+  const [isVisible, setIsVisible] = useState(false)
   return (
     <SafeAreaView>
+      <ImageViewer isVisible={isVisible} setIsVisible={setIsVisible} />
       <ScrollView contentContainerStyle={styles.container}>
-        {images.map((imageUrl, index) => (
-          <View style={styles.item} key={index}>
-            <Text style={{color:'white'}}>{index} </Text>
-            <Image source={{ uri: imageUrl.image }} style={styles.image} />
-          </View>
+        {imageList && imageList.map((imageUrl, index) => (
+            <TouchableOpacity style={styles.item} onPress={onPressImage}>
+              <Image source={{ uri: imageUrl.uri }} style={styles.image} />
+            </TouchableOpacity>
         ))}
       </ScrollView>
       <View>
@@ -38,9 +58,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    backgroundColor: "red",
-    height: "100%",
     justifyContent: "space-between",
+  },
+  button:{
   },
   item: {
     width: "33.3%", // Esto asegura un máximo de 3 imágenes por fila

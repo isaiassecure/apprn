@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Button } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addImage } from "../../Redux/imagesSlice";
 import * as MediaLibrary from "expo-media-library";
@@ -14,9 +14,11 @@ const Other = () => {
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
-   
-
+    console.log("recover image");
+    const media = await MediaLibrary.getAssetsAsync({ mediaType: "photo" });
+    console.log({ media });
   };
+
 
 
   const getImageFromGalery = async () => {
@@ -30,20 +32,15 @@ const Other = () => {
     if (!result.canceled) {
       dispatch(addImage({ image: result.assets[0].uri }));
     }
-
   };
 
   const getImageFromCamera = async () => {
-    
-    const image = await ImagePicker.launchCameraAsync()
-    console.log("------------", {image},image.assets[0].uri,image.assets)
+    const image = await ImagePicker.launchCameraAsync();
+    console.log("------------", { image }, image.assets[0].uri, image.assets);
     MediaLibrary.createAssetAsync(image.assets[0].uri).then((something) => {
-      console.log({something})
-       dispatch(addImage({ image: something.uri }));
-
+      console.log({ something });
+      dispatch(addImage({ image: something.uri }));
     });
-
-
   };
 
   return (
@@ -59,6 +56,13 @@ const Other = () => {
       <Button
         onPress={getImageFromGalery}
         title="Load from galery"
+        color="#841584"
+        accessibilityLabel="Learn more about this purple button"
+      />
+
+      <Button
+        onPress={pickImage}
+        title="Recover image"
         color="#841584"
         accessibilityLabel="Learn more about this purple button"
       />

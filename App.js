@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import rootReducer from "./src/Redux/reducers";
+import { app } from "./firebaseConfig";
 
 const Tab = createBottomTabNavigator();
 const store = configureStore({
@@ -15,6 +16,8 @@ const store = configureStore({
 });
 
 export default function App() {
+
+  console.log({app})
   return (
     <Provider store={store}>
       <GestureHandlerRootView
