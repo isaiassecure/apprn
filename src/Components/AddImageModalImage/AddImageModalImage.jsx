@@ -2,19 +2,26 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  Button,
   Modal,
   Pressable,
   Alert,
   Text,
   SafeAreaView,
   Image,
+  Button,
 } from "react-native";
+import Checkbox from "expo-checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import { addImage, deleteImage } from "../../Redux/imagesSlice";
+import { useState } from "react";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
-const ImageViewer = ({ isVisible, setIsVisible, currentImage }) => {
+const AddImageModalImage = ({
+  isCheckboxVisible = true,
+  currentImage,
+  isBackgroundVisible=false,
+  children,
+}) => {
   const dispatch = useDispatch();
 
   const handleSaveAsFood = () => dispatch(addImage({ image: currentImage }));
@@ -23,54 +30,57 @@ const ImageViewer = ({ isVisible, setIsVisible, currentImage }) => {
   const image_list = useSelector((state) => {
     return state.images.image_list;
   });
-  console.log({ image_list });
-
+  const [isChecked, setChecked] = useState(false);
   const isSelected = image_list.some((image) => image.image === currentImage);
-  console.log({ isSelected });
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
-        setIsVisible(!isVisible);
-      }}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.centeredView}>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setIsVisible(!isVisible)}
-          >
-            <Text style={styles.textStyle}>X</Text>
-          </Pressable>
-          <View style={styles.modalView}>
-            <Image source={{ uri: currentImage }} style={styles.image} />
-          </View>
-          <View>
-            {isSelected ? (
-              <Button onPress={unSelectImage} title="Unselect" />
-            ) : (
-              <Button onPress={handleSaveAsFood} title="Save as food" />
-            )}
-          </View>
+    <View style={styles.container}>
+      {isBackgroundVisible&&<View style={styles.background}>
+        <Button title="Add" />
+      </View>}
+      {children}
+      {isCheckboxVisible && (
+        <View style={styles.checkboxContainer}>
+          <Checkbox
+            style={styles.checkbox}
+            value={isChecked}
+            onValueChange={setChecked}
+          />
         </View>
-      </SafeAreaView>
-    </Modal>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
+  background: {
+    position: "absolute",
+    top: 0,
+    backgroundColor: "black",
+    zIndex: 2,
+    left: 0,
+    right: 0,
+    bottom: 0,
     flex: 1,
-  },
-  centeredView: {
-    flex: 1,
-    position: "relative",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.8)",
+  },
+  container: {
+    width: "100%",
+    height: 150, // Tamaño de las imágenes
+    backgroundColor: "red",
+    borderColor: "white",
+    borderWidth: 1,
+    position: "relative",
+  },
+  checkbox: {
+    margin: 8,
+    backgroundColor: "purple",
+  },
+  checkboxContainer: {
+    position: "absolute",
+    zIndex: 3,
+    top: 0,
+    right: 0,
   },
   modalView: {
     height: "60%",
@@ -111,4 +121,4 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 });
-export default ImageViewer;
+export default AddImageModalImage;

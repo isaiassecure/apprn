@@ -6,9 +6,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Other from "./src/Pages/Other/Other";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { configureStore } from "@reduxjs/toolkit";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import rootReducer from "./src/Redux/reducers";
 import { app } from "./firebaseConfig";
+import { getDataImages } from "./src/Utils";
+import { useEffect } from "react";
+import { loadData } from "./src/Redux/imagesSlice";
 
 const Tab = createBottomTabNavigator();
 const store = configureStore({
@@ -16,8 +19,10 @@ const store = configureStore({
 });
 
 export default function App() {
+  
+  
 
-  console.log({app})
+
   return (
     <Provider store={store}>
       <GestureHandlerRootView
@@ -26,9 +31,9 @@ export default function App() {
         }}
       >
         <NavigationContainer>
-          <Tab.Navigator initialRouteName="Home">
-            <Tab.Screen name="Home" component={Main} />
+          <Tab.Navigator initialRouteName="Options">
             <Tab.Screen name="Options" component={Other} />
+            <Tab.Screen name="Home" component={Main} />
           </Tab.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>
